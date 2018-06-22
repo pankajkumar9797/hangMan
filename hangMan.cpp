@@ -12,6 +12,7 @@ using namespace std;
 class hangMan{
 private:
     string word;
+    string update_word;
     int chances_left;
     bool game_over;
 
@@ -29,6 +30,7 @@ public:
     	vector<string> temp;
     	string temp_string;
     	string randomWord;
+        string temp_word;
 
         unsigned int MIN = 0;
     	unsigned int randomNumber;
@@ -44,49 +46,73 @@ public:
     	srand(static_cast<unsigned int>(time(0)));
     	random_shuffle(temp.begin(), temp.end());
     	randomWord = temp[0];
+
+    	string::iterator iterator1;
+
+        for (iterator1 = randomWord.begin(); iterator1 != randomWord.end(); ++iterator1) {
+            temp_word += "#";
+        }
+
     	word = randomWord;
+        update_word = temp_word;
 
         return word;
     }
 
     void update_game_status(char user_input){
         string answer;
-        answer = this->word;
-        string temp;
+        answer = word;
+
         string::iterator it;
-        for (it = answer.begin(); it != answer.end(); ++it) {
-            temp += "#";
-        }
 
         int i;
+        char temp_char;
+
         for (it = answer.begin(), i = 0; it != answer.end(); ++it, ++i) {
             if(user_input == *it){
-                temp[i] = user_input;
+                update_word[i] = answer[i];
+                temp_char = *it;
             }
         }
 
-        cout << "update game status word: "<< temp << endl;
+        if(temp_char != user_input){
+            chances_left = this->chances_left - 1 ;
+        }
+
+        cout << "update game status word: "<< update_word << endl;
     }
 
     void printF(){
+        cout << "Word is: " << word << endl;
+    	cout << "Chances left: " << chances_left << endl;
+        cout << "updated word: "<< update_word << endl;
+    }
 
-    	cout << "Selected word is: " << word << endl;
+    void play(){
+
+        char user_input;
+
+        while(chances_left > 0){
+            cout << "Please enter the character: " << endl;
+            cin >> user_input;
+            update_game_status(user_input);
+            printF();
+
+            if (update_word == word){
+                cout << "Congratulations! you've won the game!" << endl;
+                exit(1);
+            }
+
+        }
     }
 };
-/*
-class player{
-private:
-	hangMan hangman;
-public:
 
-};
-*/
 int main() {
     cout << "game starts now: ";
 
     vector<string> word;
     hangMan hangman("anonymous", 5, false);
     hangman.printF();
-    hangman.update_game_status('e');
+    hangman.play();
     return 0;
 }
